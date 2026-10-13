@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="uz"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>REDgram — norasmiy mijoz (demo)</title>
+<style>
+:root{--bg:#f4f6f8;--panel:#fff;--text:#1c2733;--sub:#7a8794;--line:#e3e8ec;--acc:#111;--mine:#e6e6e6;--theirs:#fff;--r:14px;--fs:15px;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root:not([data-theme="light"]){}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#000;--panel:#0b0b0b;--text:#f2f2f2;--sub:#8a8a8a;--line:#222;--mine:#2a2a2a;--theirs:#161616}}
+:root[data-theme="dark"]{--bg:#000;--panel:#0b0b0b;--text:#f2f2f2;--sub:#8a8a8a;--line:#222;--mine:#2a2a2a;--theirs:#161616}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:var(--fs)/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.app{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto;background:var(--panel);position:relative;overflow:hidden}
+.bar{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.bar h1{font-size:1.15em;margin:0;flex:1}
+.ib{background:none;border:0;padding:6px 10px;border-radius:10px;font-size:1.2em}
+.ib:hover{background:var(--bg)}
+.demo{background:var(--acc);color:#fff;font-size:.8em;padding:6px 14px;text-align:center}
+.screen{display:none;flex:1;min-height:0;flex-direction:column}
+.screen.on{display:flex}
+.list{overflow-y:auto;flex:1}
+.chat{display:flex;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left;align-items:center}
+.compact .chat{padding:6px 14px}.compact .av{width:34px;height:34px;font-size:.9em}
+.chat:hover{background:var(--bg)}
+.av{width:46px;height:46px;border-radius:var(--ar,50%);display:grid;place-items:center;color:#fff;font-weight:700;flex:none}
+.meta{flex:1;min-width:0}
+.row{display:flex;justify-content:space-between;gap:8px}
+.name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.time,.last{color:var(--sub);font-size:.85em}
+.last{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{background:var(--acc);color:#fff;border-radius:99px;font-size:.75em;padding:1px 7px}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
+.m{max-width:80%;padding:8px 12px;border-radius:var(--r);background:var(--theirs);align-self:flex-start;word-wrap:break-word}
+.m.me{background:var(--mine);align-self:flex-end}
+.m small{display:block;color:var(--sub);font-size:.7em;text-align:right;margin-top:2px}
+.compose{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:var(--panel)}
+.compose input{flex:1;padding:10px 14px;border-radius:99px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit}
+.send{background:var(--acc);color:#fff;border:0;border-radius:99px;padding:0 18px}
+.form{padding:22px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+.form h2{margin:0;font-size:1.4em}
+.form p{margin:0;color:var(--sub)}
+.form input{padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;width:100%}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:12px;padding:12px;font-weight:600}
+.btn.ghost{background:none;color:var(--acc)}
+.set h3{margin:18px 14px 6px;font-size:.85em;color:var(--acc)}
+.opt{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.opt span:first-child{flex:1}
+.sw{display:flex;gap:8px}
+.dot{width:26px;height:26px;border-radius:50%;border:2px solid transparent}
+.dot.on{border-color:var(--text)}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{background:none;border:0;padding:6px 11px}
+.seg button.on{background:var(--acc);color:#fff}
+.tg{width:44px;height:26px;border-radius:99px;background:var(--line);border:0;position:relative;padding:0}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}
+.tg.on{background:var(--acc)}.tg.on::after{left:21px}
+#code{text-align:center;letter-spacing:.5em;font-size:1.6em}[hidden]{display:none!important}#getcode,#back1{display:none}#login2{padding-top:0}.logo{width:88px;height:88px;display:block;margin:10px auto 0}.lg-s{width:28px;height:28px}.note{margin:14px;padding:12px;border-radius:12px;background:var(--bg);color:var(--sub);font-size:.85em}
+</style></head>
+<body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="lg" viewBox="0 0 96 96"><rect width="96" height="96" rx="24" fill="#d62839"/><path d="M48 20c-15.5 0-28 10.2-28 23 0 6.3 3 12 8 16.2L25 74l14.2-6.4c2.8.8 5.7 1.2 8.8 1.2 15.5 0 28-10.2 28-23S63.5 20 48 20z" fill="#fff"/><path d="M39 56V32h12.5c5.2 0 8.5 2.8 8.5 7.3 0 3.6-2.1 6.1-5.4 7L61 56h-6.2l-5.3-9H44.5v9H39zm5.5-13.6h6.4c2.2 0 3.4-1.1 3.4-2.9s-1.2-2.9-3.4-2.9h-6.4v5.8z" fill="#d62839"/></symbol></svg><div class="app" id="app">
+
+<section class="screen on" id="s-login">
+ 
+ <div class="form" id="login1">
+  <h2>Telefon raqamingiz</h2>
+  <svg class="logo" viewBox="0 0 96 96" role="img" aria-label="REDgram"><use href="#lg"/></svg>
+  <h2 style="text-align:center">REDgram</h2>
+  <p style="text-align:center">Telefon raqamingizni kiriting.</p>
+  <input id="phone" maxlength="17" type="tel" inputmode="tel" value="+998 " placeholder="+998 90 123 45 67" autocomplete="tel">
+  <p id="lerr" style="color:#e5484d"></p>
+  <button class="btn" id="getcode">Kod yuborish</button>
+ </div>
+ <div class="form" id="login2" hidden>
+  
+  <p>Raqamingizga yuborilgan 5 xonali kodni kiriting.</p>
+  <input id="code" inputmode="numeric" maxlength="5" placeholder="•••••" autocomplete="one-time-code">
+  <input id="pw" type="password" placeholder="Ikki bosqichli parol" hidden autocomplete="off">
+  <button class="btn" id="verify">Kirish</button>
+  <button class="btn ghost" id="back1">Raqamni o'zgartirish</button>
+ </div>
+</section>
+
+<section class="screen" id="s-list">
+ <div class="bar"><svg class="lg-s" viewBox="0 0 96 96" aria-hidden="true"><use href="#lg"/></svg><h1>REDgram</h1><button class="ib" id="toSet" aria-label="Sozlamalar">⚙</button></div>
+ <div class="list" id="chats"></div>
+</section>
+
+<section class="screen" id="s-chat">
+ <div class="bar"><button class="ib" id="toList" aria-label="Orqaga">←</button><h1 id="ctitle"></h1></div>
+ <div class="msgs" id="msgs"></div>
+ <div class="compose"><input id="inp" placeholder="Xabar yozing" autocomplete="off"><button class="send" id="send">Yuborish</button></div>
+</section>
+
+<section class="screen" id="s-set">
+ <div class="bar"><button class="ib" id="setBack" aria-label="Orqaga">←</button><h1>Sozlamalar</h1></div>
+ <div class="list set" id="setBody">
+  <h3>Ko'rinish</h3>
+  <div class="opt"><span>Mavzu</span><div class="seg" data-k="theme"><button data-v="auto">Avto</button><button data-v="light">Kun</button><button data-v="dark">Tun</button></div></div>
+  <div class="opt"><span>Asosiy rang</span><div class="sw" id="colors"></div></div>
+  <div class="opt"><span>Matn o'lchami</span><div class="seg" data-k="fs"><button data-v="13">Kichik</button><button data-v="15">O'rta</button><button data-v="18">Katta</button></div></div>
+  <h3>Xabarlar</h3>
+  <div class="opt"><span>Pufakcha burchagi</span><div class="seg" data-k="rad"><button data-v="4">Kvadrat</button><button data-v="14">Yumshoq</button><button data-v="22">Yumaloq</button></div></div>
+  <div class="opt"><span>Avatar shakli</span><div class="seg" data-k="av"><button data-v="50%">Doira</button><button data-v="12px">Kvadrat</button></div></div>
+  <h3>Chatlar ro'yxati</h3>
+  <div class="opt"><span>Ixcham ro'yxat</span><button class="tg" data-t="compact" aria-label="Ixcham ro'yxat"></button></div>
+  <h3>Bildirishnomalar</h3>
+  <div class="opt"><span>Tovush</span><button class="tg" data-t="sound" aria-label="Tovush"></button></div>
+  <div class="opt"><span>Xabar matnini ko'rsatish</span><button class="tg" data-t="preview" aria-label="Matn ko'rsatish"></button></div>
+  <h3>Hisob</h3>
+  <div class="opt"><button class="btn ghost" id="logout">Chiqish</button></div>
+  <h3>Telegram API</h3>
+  <div class="form" style="padding:12px 14px"><input id="apiId" inputmode="numeric" placeholder="api_id" autocomplete="off"><input id="apiHash" type="password" placeholder="api_hash" autocomplete="off"><button class="btn" id="apiSave">Saqlash</button><p id="apiMsg"></p></div>
+  <div class="note">REDgram — norasmiy mijoz. Telegram nomi va logotipi ishlatilmagan. Bu demo: xabarlar faqat shu sahifada saqlanadi.</div>
+ </div>
+</section>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const COLORS=['#333333','#666666','#3b7ddd','#d4577a','#7a5cc7'];
+const DEF={theme:'dark',acc:COLORS[0],fs:'15',rad:'14',av:'50%',compact:false,sound:true,preview:true};
+let S={...DEF};
+try{Object.assign(S,JSON.parse(localStorage.getItem('ychat-s2')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('ychat-s2',JSON.stringify(S))}catch(e){}};
+const data=[
+ {n:'Sardor',c:'#3b7ddd',u:2,m:[['Salom! Loyiha qanday ketyapti?','10:12'],['Yaxshi, bugun bot ustida ishladim','10:14',1],['Ajoyib, ertaga ko\'rishamiz','10:15']]},
+ {n:'Python guruhi',c:'#7a5cc7',u:5,m:[['Kim aiogram 3 bilan ishlagan?','09:40'],['Men ishlaganman, yordam beraman','09:52',1]]},
+ {n:'Dilnoza',c:'#d4577a',u:0,m:[['Konspektni yubora olasizmi?','Kecha'],['Hozir yuboraman','Kecha',1]]},
+ {n:'Yangiliklar',c:'#e0892b',u:12,m:[['Bugungi texnologiya yangiliklari','08:00']]},
+ {n:'Saqlangan xabarlar',c:'#2a8f7b',u:0,m:[['Railway tokenlarini xavfsiz saqlash','Du',1]]}
+];
+let cur=null;
+function apply(){
+ const r=document.documentElement;
+ if(S.theme==='auto')r.removeAttribute('data-theme');else r.dataset.theme=S.theme;
+ r.style.setProperty('--acc',S.acc);r.style.setProperty('--fs',S.fs+'px');
+ r.style.setProperty('--r',S.rad+'px');r.style.setProperty('--ar',S.av);
+ $('#app').classList.toggle('compact',!!S.compact);
+ $$('.seg').forEach(g=>g.querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(S[g.dataset.k])===b.dataset.v)));
+ $$('.tg').forEach(b=>{b.classList.toggle('on',!!S[b.dataset.t]);b.setAttribute('aria-pressed',!!S[b.dataset.t])});
+ $$('.dot').forEach(d=>d.classList.toggle('on',d.dataset.c===S.acc));
+}
+function show(id){$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id))}
+function renderList(){
+ $('#chats').innerHTML='';
+ data.forEach((c,i)=>{
+  const l=c.m[c.m.length-1];
+  const b=document.createElement('button');b.className='chat';
+  b.innerHTML=`<div class="av" style="background:${c.c}"></div><div class="meta"><div class="row"><span class="name"></span><span class="time"></span></div><div class="row"><span class="last"></span>${c.u?'<span class="badge">'+c.u+'</span>':''}</div></div>`;
+  b.querySelector('.av').textContent=c.n[0];
+  b.querySelector('.name').textContent=c.n;
+  b.querySelector('.time').textContent=l[1];
+  b.querySelector('.last').textContent=S.preview?l[0]:'Yangi xabar';
+  b.onclick=()=>openChat(i);
+  $('#chats').appendChild(b);
+ });
+}
+function renderMsgs(){
+ const box=$('#msgs');box.innerHTML='';
+ data[cur].m.forEach(x=>{const d=document.createElement('div');d.className='m'+(x[2]?' me':'');
+  d.textContent=x[0];const t=document.createElement('small');t.textContent=x[1];d.appendChild(t);box.appendChild(d)});
+ box.scrollTop=box.scrollHeight;
+}
+function openChat(i){cur=i;data[i].u=0;$('#ctitle').textContent=data[i].n;renderMsgs();show('s-chat')}
+function beep(){if(!S.sound)return;try{const a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);g.gain.value=.05;o.frequency.value=660;o.start();o.stop(a.currentTime+.12)}catch(e){}}
+function sendMsg(){
+ const v=$('#inp').value.trim();if(!v)return;
+ const now=new Date().toTimeString().slice(0,5);
+ data[cur].m.push([v,now,1]);$('#inp').value='';renderMsgs();
+ setTimeout(()=>{if(cur===null)return;data[cur].m.push(['Qabul qildim 👍',new Date().toTimeString().slice(0,5)]);if($('#s-chat').classList.contains('on'))renderMsgs();beep()},900);
+}
+$('#getcode').onclick=()=>{if($('#phone').value.replace(/\D/g,'').length<12){$('#phone').focus();return}$('#login1').hidden=true;$('#login2').hidden=false;$('#code').focus()};
+$('#phone').oninput=()=>{const ok=$('#phone').value.replace(/\D/g,'').length>=12,was=!$('#login2').hidden;$('#login2').hidden=!ok;if(ok&&!was)$('#code').focus()};
+$('#code').oninput=()=>{if($('#code').value.replace(/\D/g,'').length>=5)$('#verify').click()};
+$('#back1').onclick=()=>{$('#login2').hidden=true;$('#login1').hidden=false};
+$('#verify').onclick=()=>{if($('#code').value.replace(/\D/g,'').length<5){$('#code').focus();return}renderList();show('s-list')};
+$('#toSet').onclick=()=>show('s-set');
+$('#setBack').onclick=()=>{renderList();show('s-list')};
+$('#toList').onclick=()=>{cur=null;renderList();show('s-list')};
+$('#send').onclick=sendMsg;
+$('#inp').onkeydown=e=>{if(e.key==='Enter')sendMsg()};
+$('#logout').onclick=()=>{$('#login2').hidden=true;$('#login1').hidden=false;$('#code').value='';show('s-login')};
+COLORS.forEach(c=>{const d=document.createElement('button');d.className='dot';d.dataset.c=c;d.style.background=c;d.setAttribute('aria-label','Rang '+c);d.onclick=()=>{S.acc=c;save();apply()};$('#colors').appendChild(d)});
+$$('.seg button').forEach(b=>b.onclick=()=>{const k=b.parentNode.dataset.k;S[k]=b.dataset.v;save();apply()});
+$$('.tg').forEach(b=>b.onclick=()=>{S[b.dataset.t]=!S[b.dataset.t];save();apply();renderList()});
+const API_ID='35143579',API_HASH='e3c330a6d123e67e732fda1a588299d5';
+try{$('#apiId').value=localStorage.getItem('rg-id')||API_ID;$('#apiHash').value=localStorage.getItem('rg-hash')||API_HASH}catch(e){$('#apiId').value=API_ID;$('#apiHash').value=API_HASH}
+$('#apiSave').onclick=()=>{const i=$('#apiId').value.trim(),h=$('#apiHash').value.trim(),m=$('#apiMsg');if(!/^\d{4,10}$/.test(i)||!/^[a-f0-9]{32}$/i.test(h)){m.textContent="api_id faqat raqam, api_hash esa 32 ta belgi bo'lishi kerak.";return}try{localStorage.setItem('rg-id',i);localStorage.setItem('rg-hash',h);m.textContent="Saqlandi. Kalitlar faqat shu qurilmada turadi."}catch(e){m.textContent="Saqlab bo'lmadi."}};
+apply();
+</script><script src="app.js"></script></body></html>
